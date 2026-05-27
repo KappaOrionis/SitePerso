@@ -12,6 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Setup WARP (IPv6 support)
+        uses: fscarmen/warp-on-actions@v1.0
+
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:

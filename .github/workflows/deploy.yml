@@ -29,18 +29,17 @@ jobs:
           SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          cat << 'EOF' | tr -d '\r' > ~/.ssh/deploy_key
-          ${{ secrets.VPS_SSH_KEY }}
-          EOF
+          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # Verify key format (non-sensitive check)
-          head -n 1 ~/.ssh/deploy_key
+          # Debug info (non-sensitive)
+          ls -l ~/.ssh/deploy_key
+          ssh-keygen -l -f ~/.ssh/deploy_key || echo "Invalid key format"
           ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -vvv -o StrictHostKeyChecking=no" \
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude '.gitignore' \
@@ -48,3 +47,4 @@ jobs:
             --exclude 'SPEC.md' \
             --exclude '*.md' \
             ./ kappa@[${{ secrets.VPS_HOST }}]:/var/www/html/
+

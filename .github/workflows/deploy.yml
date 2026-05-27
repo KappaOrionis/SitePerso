@@ -30,10 +30,11 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           printf "%s" "$SSH_KEY_B64" | base64 -d > ~/.ssh/deploy_key
+          # Add a newline at the end if it's missing (mandatory for some OpenSSH versions)
+          sed -i '$a\' ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # Diagnostic: Check file existence and first line
+          # Diagnostic: Check file size (should be around 424-425)
           ls -l ~/.ssh/deploy_key
-          head -n 1 ~/.ssh/deploy_key
           ssh-keygen -l -f ~/.ssh/deploy_key
           ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 

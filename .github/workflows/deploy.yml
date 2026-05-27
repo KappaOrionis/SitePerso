@@ -25,15 +25,13 @@ jobs:
           warp-cli --accept-tos status
 
       - name: Setup SSH Key
-        env:
-          SSH_KEY_B64: ${{ secrets.VPS_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          printf "%s" "$SSH_KEY_B64" | base64 -d > ~/.ssh/deploy_key
-          # Add a newline at the end if it's missing (mandatory for some OpenSSH versions)
-          sed -i '$a\' ~/.ssh/deploy_key
+          cat << 'EOF' > ~/.ssh/deploy_key
+          ${{ secrets.VPS_SSH_KEY }}
+          EOF
           chmod 600 ~/.ssh/deploy_key
-          # Diagnostic: Check file size (should be around 424-425)
+          # Final diagnostic
           ls -l ~/.ssh/deploy_key
           ssh-keygen -l -f ~/.ssh/deploy_key
           ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts

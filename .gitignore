@@ -1,0 +1,14 @@
+# Editor and OS files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Project management files (optional: comment out if you want to version them)
+README.md
+SPEC.md
+*.md
+
+# Git and GitHub
+.git/

@@ -1,0 +1,33 @@
+name: Deploy Site to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.VPS_SSH_KEY }}
+          known_hosts: 'placeholder' # Will be updated by ssh-keyscan
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        run: |
+          rsync -avz --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.gitignore' \
+            --exclude 'README.md' \
+            --exclude 'SPEC.md' \
+            --exclude '*.md' \
+            ./ ${{ secrets.VPS_USER }}@[${{ secrets.VPS_HOST }}]:/var/www/html/

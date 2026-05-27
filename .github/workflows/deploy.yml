@@ -28,6 +28,11 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "ERROR: VPS_SSH_KEY is empty or not accessible"
+            exit 1
+          fi
+          echo "Secret length: ${#SSH_KEY} characters"
           mkdir -p ~/.ssh
           echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key

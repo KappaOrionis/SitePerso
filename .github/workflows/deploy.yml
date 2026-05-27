@@ -31,11 +31,14 @@ jobs:
           known_hosts: 'placeholder' # Will be updated by ssh-keyscan
 
       - name: Adding Known Hosts
-        run: ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
         run: |
           rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes" \
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude '.gitignore' \

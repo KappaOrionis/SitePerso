@@ -25,9 +25,11 @@ jobs:
           warp-cli --accept-tos status
 
       - name: Setup SSH Key
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -6 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
